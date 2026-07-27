@@ -344,7 +344,7 @@ public class ServerInventoryManager {
             
             // Отправляем сообщение игроку
             if (!CustomStartInventory.HIDE_CHAT_MESSAGES.get()) {
-                player.sendSystemMessage(Component.literal("§a[CSI] §fПолучен стартовый набор!"));
+                player.sendSystemMessage(Component.translatable("csi.message.starting_inventory_received"));
             }
         }
     }

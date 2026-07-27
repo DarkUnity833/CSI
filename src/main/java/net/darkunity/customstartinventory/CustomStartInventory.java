@@ -531,7 +531,7 @@ public class CustomStartInventory {
             markInventoryReceived(player);
             
             if (SHOW_WELCOME_MESSAGE.get() && !HIDE_CHAT_MESSAGES.get()) {
-                player.sendSystemMessage(Component.literal("§a[CSI] §fStarting inventory received!"));
+                player.sendSystemMessage(Component.translatable("csi.message.starting_inventory_received"));
             }
             
             if (ENABLE_SOUNDS.get()) {
@@ -1007,19 +1007,7 @@ public class CustomStartInventory {
             )
             .then(Commands.literal("help")
                 .executes(context -> {
-                    context.getSource().sendSuccess(() -> Component.literal(
-                        "=== Custom Start Inventory ===\n" +
-                        "/csi save [player] - Сохранить инвентарь\n" +
-                        "/csi load [player] - Загрузить инвентарь\n" +
-                        "/csi remove [player] - Удалить сохраненный инвентарь\n" +
-                        "/csi kit create <name> - Создать набор из инвентаря\n" +
-                        "/csi kit <name> [player] - Выдать набор\n" +
-                        "/csi kit list - Список всех наборов\n" +
-                        "/csi kit remove <name> - Удалить набор\n" +
-                        "/csi kit remove all - Удалить все наборов\n" +
-                        "/csi kit reload - Перезагрузить конфигурацию\n\n" +
-                        "Система автоматически следит за инвентарем"
-                    ), false);
+                    context.getSource().sendSuccess(() -> Component.translatable("csi.command.help"), false);
                     return 1;
                 }))
         );
@@ -1027,33 +1015,33 @@ public class CustomStartInventory {
     
     private int handleSave(CommandSourceStack source, ServerPlayer target) {
         if (!MOD_ENABLED.get()) {
-            source.sendFailure(Component.literal("§cMod is disabled"));
+            source.sendFailure(Component.translatable("csi.message.mod_disabled"));
             return 0;
         }
         
         if (INTELLIGENT_SCANNING.get() && countAllItems(target) == 0) {
-            source.sendFailure(Component.literal("§cCannot save empty inventory when intelligent scanning is enabled"));
+            source.sendFailure(Component.translatable("csi.message.cannot_save_empty"));
             return 0;
         }
 
         boolean saved = saveInventory(target);
         
         if (saved) {
-            source.sendSuccess(() -> Component.literal("§aInventory saved from " + target.getName().getString()), false);
+            source.sendSuccess(() -> Component.translatable("csi.message.inventory_saved", target.getName().getString()), false);
             
             if (ENABLE_SOUNDS.get()) {
                 playSound(source, target, SoundEvents.NOTE_BLOCK_PLING.value());
             }
             return 1;
         } else {
-            source.sendFailure(Component.literal("§cFailed to save inventory"));
+            source.sendFailure(Component.translatable("csi.message.save_failed"));
             return 0;
         }
     }
 
     private int handleRemove(CommandSourceStack source, ServerPlayer target) {
         if (!MOD_ENABLED.get()) {
-            source.sendFailure(Component.literal("§cMod is disabled"));
+            source.sendFailure(Component.translatable("csi.message.mod_disabled"));
             return 0;
         }
         
@@ -1073,7 +1061,7 @@ public class CustomStartInventory {
             persisted.remove("csi_inventory_received");
         }
         
-        source.sendSuccess(() -> Component.literal("§aSaved inventory deleted for " + target.getName().getString()), false);
+        source.sendSuccess(() -> Component.translatable("csi.message.saved_inventory_deleted", target.getName().getString()), false);
         
         if (ENABLE_SOUNDS.get()) {
             playSound(source, target, SoundEvents.NOTE_BLOCK_HAT.value());
@@ -1083,7 +1071,7 @@ public class CustomStartInventory {
     
     private int handleLoad(CommandSourceStack source, ServerPlayer target) {
         if (!MOD_ENABLED.get()) {
-            source.sendFailure(Component.literal("§cMod is disabled"));
+            source.sendFailure(Component.translatable("csi.message.mod_disabled"));
             return 0;
         }
         
@@ -1091,7 +1079,7 @@ public class CustomStartInventory {
         boolean loaded = loadInventory(target);
         
         if (loaded) {
-            source.sendSuccess(() -> Component.literal("§aInventory loaded for " + target.getName().getString()), false);
+            source.sendSuccess(() -> Component.translatable("csi.message.inventory_loaded", target.getName().getString()), false);
             
             if (ENABLE_SOUNDS.get()) {
                 playSound(source, target, SoundEvents.EXPERIENCE_ORB_PICKUP);
@@ -1100,37 +1088,37 @@ public class CustomStartInventory {
             markInventoryReceived(target);
             return 1;
         } else {
-            source.sendFailure(Component.literal("§cNo saved inventory found"));
+            source.sendFailure(Component.translatable("csi.message.no_saved_inventory"));
             return 0;
         }
     }
     
     private int handleKitCreate(CommandSourceStack source, ServerPlayer player, String kitName) {
         if (!MOD_ENABLED.get()) {
-            source.sendFailure(Component.literal("§cMod is disabled"));
+            source.sendFailure(Component.translatable("csi.message.mod_disabled"));
             return 0;
         }
         
         boolean success = ServerInventoryManager.createKitFromInventory(player, kitName);
         if (success) {
-            source.sendSuccess(() -> Component.literal("§aНабор '" + kitName + "' создан из вашего инвентаря"), false);
+            source.sendSuccess(() -> Component.translatable("csi.message.kit_created", kitName), false);
         } else {
-            source.sendFailure(Component.literal("§cОшибка: набор с таким именем уже существует"));
+            source.sendFailure(Component.translatable("csi.message.kit_create_failed"));
         }
         return success ? 1 : 0;
     }
 
     private int handleKitGive(CommandSourceStack source, ServerPlayer target, String kitName) {
         if (!MOD_ENABLED.get()) {
-            source.sendFailure(Component.literal("§cMod is disabled"));
+            source.sendFailure(Component.translatable("csi.message.mod_disabled"));
             return 0;
         }
         
         boolean success = ServerInventoryManager.giveKitToPlayer(target, kitName);
         if (success) {
-            source.sendSuccess(() -> Component.literal("§aНабор '" + kitName + "' выдан игроку " + target.getName().getString()), false);
+            source.sendSuccess(() -> Component.translatable("csi.message.kit_given", kitName, target.getName().getString()), false);
         } else {
-            source.sendFailure(Component.literal("§cНабор '" + kitName + "' не найден"));
+            source.sendFailure(Component.translatable("csi.message.kit_not_found", kitName));
         }
         return success ? 1 : 0;
     }
@@ -1139,31 +1127,31 @@ public class CustomStartInventory {
         List<ServerInventoryManager.StarterKit> kits = ServerInventoryManager.getAllKits();
         
         if (kits.isEmpty()) {
-            source.sendSuccess(() -> Component.literal("§eНет сохраненных наборов"), false);
-            source.sendSuccess(() -> Component.literal("§7Используйте §e/csi kit create <name>§7 для создания"), false);
+            source.sendSuccess(() -> Component.translatable("csi.message.no_kits_saved"), false);
+            source.sendSuccess(() -> Component.translatable("csi.message.kit_create_hint"), false);
         } else {
-            source.sendSuccess(() -> Component.literal("§a=== Доступные наборы ==="), false);
-            
+            source.sendSuccess(() -> Component.translatable("csi.message.available_kits_header"), false);
+
             for (ServerInventoryManager.StarterKit kit : kits) {
-                String autoGive = kit.giveOnFirstJoin ? "§a(авто)" : "§7(ручная)";
+                Component autoGive = Component.translatable(kit.giveOnFirstJoin ? "csi.message.kit_auto" : "csi.message.kit_manual");
                 int totalItems = kit.items.size() + kit.armor.size() + kit.offhand.size();
-                source.sendSuccess(() -> Component.literal("§e" + kit.kitName + " §f- " + autoGive + " §7(" + totalItems + " предметов)"), false);
+                source.sendSuccess(() -> Component.translatable("csi.message.kit_list_entry", kit.kitName, autoGive, totalItems), false);
             }
         }
-        
-        source.sendSuccess(() -> Component.literal("§a=== Команды ==="), false);
-        source.sendSuccess(() -> Component.literal("§e/csi kit create <name>§7 - создать из инвентаря"), false);
-        source.sendSuccess(() -> Component.literal("§e/csi kit <name> [player]§7 - выдать набор"), false);
-        source.sendSuccess(() -> Component.literal("§e/csi kit remove <name>§7 - удалить набор"), false);
-        source.sendSuccess(() -> Component.literal("§e/csi kit remove all§7 - удалить все наборы"), false);
-        source.sendSuccess(() -> Component.literal("§e/csi kit reload§7 - перезагрузить конфиг"), false);
+
+        source.sendSuccess(() -> Component.translatable("csi.message.commands_header"), false);
+        source.sendSuccess(() -> Component.translatable("csi.message.help.kit_create"), false);
+        source.sendSuccess(() -> Component.translatable("csi.message.help.kit_give"), false);
+        source.sendSuccess(() -> Component.translatable("csi.message.help.kit_remove"), false);
+        source.sendSuccess(() -> Component.translatable("csi.message.help.kit_remove_all"), false);
+        source.sendSuccess(() -> Component.translatable("csi.message.help.kit_reload"), false);
         
         return kits.size();
     }
 
     private int handleKitRemove(CommandSourceStack source, String kitName) {
         if (!MOD_ENABLED.get()) {
-            source.sendFailure(Component.literal("§cMod is disabled"));
+            source.sendFailure(Component.translatable("csi.message.mod_disabled"));
             return 0;
         }
         
@@ -1171,62 +1159,62 @@ public class CustomStartInventory {
             return handleKitRemoveAll(source);
         }
         
-        source.sendSuccess(() -> Component.literal("§cВы собираетесь удалить набор '" + kitName + "'"), false);
-        source.sendSuccess(() -> Component.literal("§cЭто действие нельзя отменить!"), false);
-        source.sendSuccess(() -> Component.literal("§aДля подтверждения используйте: §e/csi kit remove " + kitName + " confirm"), false);
+        source.sendSuccess(() -> Component.translatable("csi.message.kit_remove_confirm_prompt", kitName), false);
+        source.sendSuccess(() -> Component.translatable("csi.message.action_irreversible"), false);
+        source.sendSuccess(() -> Component.translatable("csi.message.kit_remove_confirm_hint", kitName), false);
         return 0;
     }
 
     private int handleKitRemoveConfirm(CommandSourceStack source, String kitName) {
         if (!MOD_ENABLED.get()) {
-            source.sendFailure(Component.literal("§cMod is disabled"));
+            source.sendFailure(Component.translatable("csi.message.mod_disabled"));
             return 0;
         }
         
         boolean success = ServerInventoryManager.removeKit(kitName);
         if (success) {
-            source.sendSuccess(() -> Component.literal("§aНабор '" + kitName + "' удален"), false);
+            source.sendSuccess(() -> Component.translatable("csi.message.kit_removed", kitName), false);
         } else {
-            source.sendFailure(Component.literal("§cНабор '" + kitName + "' не найден"));
+            source.sendFailure(Component.translatable("csi.message.kit_not_found", kitName));
         }
         return success ? 1 : 0;
     }
 
     private int handleKitRemoveAll(CommandSourceStack source) {
         if (!MOD_ENABLED.get()) {
-            source.sendFailure(Component.literal("§cMod is disabled"));
+            source.sendFailure(Component.translatable("csi.message.mod_disabled"));
             return 0;
         }
         
-        source.sendSuccess(() -> Component.literal("§cВНИМАНИЕ: Вы собираетесь удалить ВСЕ наборы!"), false);
-        source.sendSuccess(() -> Component.literal("§cЭто действие нельзя отменить!"), false);
-        source.sendSuccess(() -> Component.literal("§aДля подтверждения используйте: §e/csi kit remove all confirm"), false);
+        source.sendSuccess(() -> Component.translatable("csi.message.kit_remove_all_warning"), false);
+        source.sendSuccess(() -> Component.translatable("csi.message.action_irreversible"), false);
+        source.sendSuccess(() -> Component.translatable("csi.message.kit_remove_all_confirm_hint"), false);
         return 0;
     }
 
     private int handleKitRemoveAllConfirm(CommandSourceStack source) {
         if (!MOD_ENABLED.get()) {
-            source.sendFailure(Component.literal("§cMod is disabled"));
+            source.sendFailure(Component.translatable("csi.message.mod_disabled"));
             return 0;
         }
         
         boolean success = ServerInventoryManager.removeAllKits();
         if (success) {
-            source.sendSuccess(() -> Component.literal("§aВсе наборы удалены"), false);
+            source.sendSuccess(() -> Component.translatable("csi.message.all_kits_removed"), false);
         } else {
-            source.sendFailure(Component.literal("§cОшибка при удалении всех наборов"));
+            source.sendFailure(Component.translatable("csi.message.remove_all_kits_failed"));
         }
         return success ? 1 : 0;
     }
 
     private int handleKitReload(CommandSourceStack source) {
         if (!MOD_ENABLED.get()) {
-            source.sendFailure(Component.literal("§cMod is disabled"));
+            source.sendFailure(Component.translatable("csi.message.mod_disabled"));
             return 0;
         }
         
         ServerInventoryManager.reloadConfig();
-        source.sendSuccess(() -> Component.literal("§aКонфигурация наборов перезагружена"), false);
+        source.sendSuccess(() -> Component.translatable("csi.message.kits_config_reloaded"), false);
         return 1;
     }
     
