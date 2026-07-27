@@ -14,12 +14,14 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
@@ -139,8 +141,10 @@ public class CustomStartInventory {
         NeoForge.EVENT_BUS.register(this);
         
         // Регистрация экрана конфигурации только для клиента
-        ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class,
-            () -> (mc, parent) -> new CSIConfigScreen(parent));
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class,
+                () -> (mc, parent) -> new CSIConfigScreen(parent));
+        }
     }
     
     private void setupConfig(ModConfigSpec.Builder builder) {
