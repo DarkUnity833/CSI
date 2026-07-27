@@ -165,7 +165,34 @@ public class ServerInventoryManager {
     public static StarterKit getDefaultKit() {
         return defaultStarterKit;
     }
-    
+
+    // Помечает набор как выдаваемый автоматически при первом входе (и снимает эту отметку
+    // со всех остальных наборов - выдаваться автоматически должен только один набор).
+    public static boolean setDefaultKit(String kitName) {
+        List<StarterKit> kits = getAllKits();
+        StarterKit target = null;
+        for (StarterKit kit : kits) {
+            boolean isTarget = kit.kitName.equalsIgnoreCase(kitName);
+            kit.giveOnFirstJoin = isTarget;
+            if (isTarget) {
+                target = kit;
+            }
+        }
+
+        if (target == null) {
+            return false;
+        }
+
+        try {
+            saveConfig(kits);
+            defaultStarterKit = target;
+            return true;
+        } catch (IOException e) {
+            System.out.println("[CSI] Ошибка сохранения набора по умолчанию: " + e.getMessage());
+            return false;
+        }
+    }
+
     // Создание нового набора из инвентаря игрока
     public static boolean createKitFromInventory(ServerPlayer player, String kitName) {
         try {
@@ -344,7 +371,7 @@ public class ServerInventoryManager {
             
             // Отправляем сообщение игроку
             if (!CustomStartInventory.HIDE_CHAT_MESSAGES.get()) {
-                player.sendSystemMessage(Component.literal("§a[CSI] §fПолучен стартовый набор!"));
+                player.sendSystemMessage(CSILang.get(player, "csi.message.starting_inventory_received"));
             }
         }
     }

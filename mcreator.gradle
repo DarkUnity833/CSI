@@ -1,0 +1,3 @@
+// Placeholder: MCreator generates this file locally and it was never committed to the repo
+// (confirmed missing on both the upstream repo and this fork). Empty stub so the main
+// build.gradle's "apply from: 'mcreator.gradle'" doesn't fail outright.
